@@ -1,0 +1,51 @@
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+from efficientnet.tfkeras import EfficientNetB0
+from sklearn.model_selection import train_test_split
+
+# Load CIFAR-10 dataset and preprocess
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+# Split the dataset into training and validation sets
+train_images, val_images, train_labels, val_labels = train_test_split(
+    train_images, train_labels, test_size=0.2, random_state=42
+)
+
+# Choose EfficientNetB0 as the base model
+base_model = EfficientNetB0(input_shape=(32, 32, 3), include_top=False, weights='imagenet')
+
+# Freeze the convolutional layers
+base_model.trainable = True
+
+# Create your own model on top of the base model
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Define callbacks (optional)
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True),
+    tf.keras.callbacks.ModelCheckpoint("/Users/kiingkunal/Desktop/Myproject/best_model.h5", save_best_only=True),
+]
+
+# Train the model
+history = model.fit(
+    train_images, train_labels,
+    epochs=20,
+    validation_data=(val_images, val_labels),
+    callbacks=callbacks
+)
+
+# Evaluate the model on the test set
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"Test Accuracy: {test_acc}")
