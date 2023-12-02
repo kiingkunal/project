@@ -1,0 +1,30 @@
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+from efficientnet.tfkeras import EfficientNetB0
+
+# Load CIFAR-10 dataset and preprocess
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+# Choose EfficientNetB0 as the base model
+base_model = EfficientNetB0(input_shape=(32, 32, 3), include_top=False, weights='imagenet')
+
+# Freeze the convolutional layers
+base_model.trainable = False
+
+# Create your own model on top of the base model
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Display the model summary
+model.summary()
