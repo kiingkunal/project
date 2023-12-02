@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification App</title>
+</head>
+<body>
+    <h1>Image Classification App</h1>
+    
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+        <h2>Prediction: {{ prediction }}</h2>
+        <!-- Update the image source with the correct path -->
+        <img src="{{ url_for('static', filename='/uploads/uploaded_image.jpg') }}" alt="Uploaded Image">
+    {% endif %}
+</body>
+</html>
