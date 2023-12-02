@@ -1,0 +1,23 @@
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+from sklearn.model_selection import train_test_split
+
+# Load CIFAR-10 dataset
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+
+# Normalize pixel values to be between 0 and 1
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+# Resize images (optional, depending on your model architecture)
+# train_images = tf.image.resize(train_images, (new_height, new_width))
+# test_images = tf.image.resize(test_images, (new_height, new_width))
+
+# Split the dataset into training and validation sets
+train_images, val_images, train_labels, val_labels = train_test_split(
+    train_images, train_labels, test_size=0.2, random_state=42
+)
+
+# Verify the shapes of the datasets
+print("Training set shape:", train_images.shape)
+print("Validation set shape:", val_images.shape)
+print("Testing set shape:", test_images.shape)
