@@ -1,0 +1,15 @@
+# Evaluate the model on the test set
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"Test Accuracy: {test_acc}")
+
+# Make predictions on the test set
+predictions = model.predict(test_images)
+
+# Convert predictions to class labels
+predicted_labels = tf.argmax(predictions, axis=1)
+
+# Calculate additional metrics
+from sklearn.metrics import classification_report
+
+print("Classification Report:")
+print(classification_report(test_labels, predicted_labels))
